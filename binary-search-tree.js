@@ -68,15 +68,40 @@ class Node {
   /** dfsInOrder(): Traverse from the invoking node using in-order DFS.
   * Returns an array of visited nodes. */
 
-  dfsInOrder() {
+  dfsInOrder(out = []) {
+    if (this === null) return out;
+
+    if (this.left) {
+      out.concat(this.left.dfsInOrder(out));
+    }
+
+    out.push(this.val);
+
+    if (this.right) {
+      out.concat(this.right.dfsInOrder(out));
+    }
+
+    return out;
 
   }
 
   /** dfsPostOrder(): Traverse from the invoking node using post-order DFS.
   * Returns an array of visited nodes. */
 
-  dfsPostOrder() {
+  dfsPostOrder(out = []) {
+    if (this === null) return out;
 
+    if (this.left) {
+      out.concat(this.left.dfsPostOrder(out));
+    }
+
+    if (this.right) {
+      out.concat(this.right.dfsPostOrder(out));
+    }
+
+    out.push(this.val);
+
+    return out;
   }
 
 }
@@ -164,9 +189,6 @@ class BinarySearchTree {
     if (!this.root) {
       return [];
     }
-    // let out = [];
-    // this.root.dfsPreOrder(out);
-    // return out;
     return this.root.dfsPreOrder();
   }
 
@@ -174,20 +196,45 @@ class BinarySearchTree {
    * Returns an array of visited nodes. */
 
   dfsInOrder() {
-
+    if (!this.root) {
+      return [];
+    }
+    return this.root.dfsInOrder();
   }
 
   /** dfsPostOrder(): Traverse the BST using post-order DFS.
    * Returns an array of visited nodes. */
 
   dfsPostOrder() {
-
+    if (!this.root) {
+      return [];
+    }
+    return this.root.dfsPostOrder();
   }
 
   /** bfs(): Traverse the BST using BFS.
    * Returns an array of visited nodes. */
 
   bfs() {
+    if (!this.root) {
+      return [];
+    }
+    let out = [];
+    let toVisitQueue = [this.root];
+
+    while (toVisitQueue.length) {
+      let current = toVisitQueue.shift();
+
+      out.push(current.val);
+
+      if (current.left)
+        toVisitQueue.push(current.left);
+
+      if (current.right)
+        toVisitQueue.push(current.right);
+    }
+
+    return out;
 
   }
 
@@ -195,6 +242,16 @@ class BinarySearchTree {
    * Returns undefined if no successor. */
 
   findSuccessorNode(node) {
+    if (!node.right) {
+      return undefined;
+    }
+    let current = node.right;
+
+    while (current.left) {
+      current = current.left;
+    }
+
+    return current;
 
   }
 
@@ -203,6 +260,43 @@ class BinarySearchTree {
    * Returns the removed node. */
 
   remove(val) {
+    let nodeToRemove;
+    let parentOfRemoved;
+    let current = this.root;
+
+    if (!current) {
+      return;
+    }
+
+    while (current) {
+      if (current.left?.val === val)
+        nodeToRemove = current.left;
+        parentOfRemoved = current;
+
+      if (current.right?.val === val)
+        nodeToRemove = current.right;
+        parentOfRemoved = current;
+
+      current = (val < current.val)
+        ? current.left
+        : current.right;
+    }
+
+    let succesorNode = this.findSuccessorNode(nodeToRemove)
+    //no children
+    if(!(nodeToRemove.left || nodeToRemove.right)){
+      nodeToRemove.val > parentOfRemoved.val ?
+      parentOfRemoved.right = null : parentOfRemoved.left = null
+    }
+    //single child
+    else if(nodeToRemove.left ^ nodeToRemove.right){
+
+    }
+    //two children
+    else if(nodeToRemove.left && nodeToRemove.right){
+      
+    }
+
 
   }
 }
